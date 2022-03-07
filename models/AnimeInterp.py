@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import argparse
 
 from .FeatureExtractor import FeatureExtractor
-from .RFR.rfr import RFR
+from .RFR.rfr_new import RFR
 from .ForwardWarp import ForwardWarp
 from .GridNet import GridNet
 
