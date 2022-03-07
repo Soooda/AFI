@@ -3,9 +3,6 @@ import torch.nn as nn
 
 
 class FeatureExtractor(nn.Module):
-    '''
-    VGG-19
-    '''
     def __init__(self, path='./network-default.pytorch'):
         super(FeatureExtractor, self).__init__()
         self.conv1 = nn.Conv2d(3, 32, 3, padding=1)
