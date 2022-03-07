@@ -15,6 +15,7 @@ class AnimeInterp(nn.Module):
         args = argparse.Namespace()
         args.small = False
         args.mixed_precision = False
+        args.num_heads = 1
         # args.requires_sq_flow = False
 
         self.flownet = RFR(args)
