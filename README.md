@@ -1,9 +1,10 @@
 ## Environment
 ### Basic
+Run under NVCC *10.0.130*.
 ```bash
-conda create --name AFI python==3.7
+conda create --name AFI python=3.7
 conda activate AFI
-conda install pytorch=1.8.0 torchvision=0.9.0 cudatoolkit=11.1 -c pytorch -c conda-forge
+conda install pytorch=1.2.0 torchvision=0.4.0 cudatoolkit=10.0 -c pytorch
 ```
 ### Packages
 ```bash
