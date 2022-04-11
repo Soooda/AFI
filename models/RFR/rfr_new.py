@@ -39,7 +39,7 @@ def backwarp(img, flow):
     # stacking X and Y
     grid = torch.stack((x,y), dim=3)
     # Sample pixels using bilinear interpolation.
-    imgOut = torch.nn.functional.grid_sample(img, grid)
+    imgOut = torch.nn.functional.grid_sample(img, grid, align_corners=True)
 
     return imgOut
 
