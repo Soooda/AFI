@@ -35,7 +35,7 @@ class ForwardWarp(nn.Module):
 		N, C, _, _ = img.size()
 		
 		# translate start-point optical flow to end-point optical flow
-		y = flo[:, 0:1 :, :]
+		y = flo[:, 0:1, :, :]
 		x = flo[:, 1:2, :, :]
 
 		x = x.repeat(1, C, 1, 1)
