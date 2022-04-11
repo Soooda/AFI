@@ -77,7 +77,7 @@ class RFR(nn.Module):
         self.fnet = BasicEncoder(output_dim=256, norm_fn='instance', dropout=args.dropout)        
         self.cnet = BasicEncoder(output_dim=hdim+cdim, norm_fn='batch', dropout=args.dropout)
         self.update_block = GMAUpdateBlock(self.args, hidden_dim=hdim)
-        self.attention = Attention(args=self.args, dim=cdim, heads=self.args.num_heads, max_pos_size=160, dim_head=cdim)
+        self.att = Attention(args=self.args, dim=cdim, heads=self.args.num_heads, max_pos_size=160, dim_head=cdim)
         self.attention2 = ErrorAttention(6, 1)
         
         
@@ -184,7 +184,7 @@ class RFR(nn.Module):
             inp = torch.relu(inp)
 
             # attention, att_c, att_p = self.att(inp)
-            attention = self.attention(inp)
+            attention = self.att(inp)
 
         coords0, coords1 = self.initialize_flow(image1)
 
