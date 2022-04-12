@@ -1,3 +1,7 @@
+'''
+For combining anime_interp_full.ckpt with gma-sintel-no-zip.pth
+'''
+
 import torch
 
 # from models.AnimeInterp import AnimeInterp
