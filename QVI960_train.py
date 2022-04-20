@@ -76,7 +76,8 @@ for epoch in range(epochs):
     # Resume
     if os.path.exists(checkpoint_dir + str(epoch) + ".pth"):
         temp = torch.load(checkpoint_dir + str(epoch) + ".pth")
-        model.load_state_dict(temp['state_dict'])
+        ret = model.load_state_dict(temp['state_dict'])
+        print(ret)
         optimizer.load_state_dict(temp['optimizer'])
         scheduler.load_state_dict(temp['scheduler'])
 
@@ -106,7 +107,7 @@ for epoch in range(epochs):
     
     end = time.time()
     print("Epoch {} Loss: {} Time: {:.2f} min".format(epoch, iLoss, (end - start) / 60))
-    with open('train.log', 'w') as f:
+    with open('train.log', 'a') as f:
         f.write("Epoch {} Loss: {} Time: {:.2f} min\n".format(epoch, iLoss, (end - start) / 60))
     
     checkpoints = {
