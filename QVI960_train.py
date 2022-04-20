@@ -24,7 +24,7 @@ checkpoint_dir = 'checkpoints/QVI960/'
 trainset_root = 'datasets/QVI-960'
 train_size = (640, 360)
 train_crop_size = (352, 352)
-train_batch_size = 2
+train_batch_size = 16
 epochs = 2
 
 mean = [0.429, 0.431, 0.397]
@@ -75,7 +75,12 @@ if not os.path.exists(checkpoint_dir):
 for epoch in range(epochs):
     # Resume
     if os.path.exists(checkpoint_dir + str(epoch) + ".pth"):
-        scheduler.step()
+        temp = torch.load(checkpoint_dir + str(epoch) + ".pth")
+        model.load_state_dict(temp['state_dict'])
+        optimizer.load_state_dict(temp['optimizer'])
+        scheduler.load_state_dict(temp['scheduler'])
+
+        print(f"Epoch {epoch} Checkpoint loaded!")
         continue
 
     iLoss = 0
@@ -104,8 +109,12 @@ for epoch in range(epochs):
     with open('train.log', 'w') as f:
         f.write("Epoch {} Loss: {} Time: {:.2f} min\n".format(epoch, iLoss, (end - start) / 60))
     
-    
-    torch.save(model.state_dict(), checkpoint_dir + str(epoch) + ".pth")
+    checkpoints = {
+        'state_dict': model.state_dict(),
+        'optimizer': optimizer.state_dict(),
+        'scheduler': scheduler.state_dict(),
+    }
+    torch.save(checkpoints, checkpoint_dir + str(epoch) + ".pth")
 
     # Increment scheduler count
     scheduler.step()
