@@ -9,7 +9,6 @@ import argparse
 import numpy as np
 import os
 import time
-import sys
 
 from datas.QVI960 import QVI960
 from models.AnimeInterp import AnimeInterp
@@ -82,9 +81,8 @@ for epoch in range(epochs):
     iLoss = 0
     start = time.time()
     for trainIndex, (trainData, t) in enumerate(trainloader, 0):
-        print(trainIndex, len(trainloader))
-        sys.stdout.flush()
-        
+        print(f"{trainIndex}/{len(trainloader)}", end='', flush='')
+
         # Get the input and the target from the training set
         frame0, frameT, frame1 = trainData
 
