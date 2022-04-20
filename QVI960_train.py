@@ -100,4 +100,4 @@ for epoch in range(epochs):
     scheduler.step()
 
 end = time.time()
-print("Totol Running Time is {:.2f} min.".format((end - start) / 60)
+print("Totol Running Time is {:.2f} min.".format((end - start) / 60))
