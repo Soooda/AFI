@@ -23,7 +23,7 @@ checkpoint_dir = 'checkpoints/QVI960/'
 trainset_root = 'datasets/QVI-960'
 train_size = (640, 360)
 train_crop_size = (352, 352)
-train_batch_size = 25
+train_batch_size = 2
 epochs = 2
 
 mean = [0.429, 0.431, 0.397]
@@ -46,7 +46,7 @@ revNormalize = TF.Compose([revnormalize1, revnormalize2])
 revtrans = TF.Compose([revnormalize1, revnormalize2, TF.ToPILImage()])
 
 trainset = QVI960(trainset_root, trans, train_size, train_crop_size, train=True)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size, shuffle=True, num_workers=32)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size, shuffle=True, num_workers=20)
 
 model = AnimeInterp(path=None).cuda()
 # Freeze RFR
