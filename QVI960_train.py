@@ -12,7 +12,7 @@ import time
 from datas.QVI960 import QVI960
 from models.AnimeInterp import AnimeInterp
 
-os.environ["CUDA_AVAILABLE_DEVICES"] = str(3)
+#os.environ["CUDA_AVAILABLE_DEVICES"] = str(3)
 
 # Loss Function
 def loss_fn(output, gt):
@@ -92,7 +92,10 @@ for epoch in range(epochs):
 
         iLoss += loss.item()
     
-    print(f"Epoch {epoch} Loss: {iLoss}")
+    print(f"Epoch {epoch} Loss: {iLoss}", flush=True)
+    with open('train.log', 'w') as f:
+        f.write(f"Epoch {epoch} Loss: {iLoss}\n")
+    
     
     torch.save(model.state_dict(), checkpoint_dir + str(epoch) + ".pth")
 
@@ -101,3 +104,6 @@ for epoch in range(epochs):
 
 end = time.time()
 print("Totol Running Time is {:.2f} min.".format((end - start) / 60))
+with open('train.log', 'w') as f:
+    f.write("Totol Running Time is {:.2f} min.\n".format((end - start) / 60))
+    
