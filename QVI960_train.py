@@ -81,7 +81,7 @@ for epoch in range(epochs):
     iLoss = 0
     start = time.time()
     for trainIndex, (trainData, t) in enumerate(trainloader, 0):
-        print(f"{trainIndex}/{len(trainloader)}", end='', flush='')
+        print(f"\r{trainIndex}/{len(trainloader)}", end='', flush='')
 
         # Get the input and the target from the training set
         frame0, frameT, frame1 = trainData
