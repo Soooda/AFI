@@ -1,3 +1,4 @@
+from re import A
 import torch
 import torchvision
 import torchvision.transforms as TF
@@ -70,12 +71,17 @@ print(ret)
 if not os.path.exists(checkpoint_dir):
     os.mkdir(checkpoint_dir)
 
-start = time.time()
 
 for epoch in range(epochs):
+    # Resume
+    if os.path.exists(checkpoint_dir + str(epoch) + ".pth"):
+        scheduler.step()
+        continue
+
     iLoss = 0
+    start = time.time()
     for trainIndex, (trainData, t) in enumerate(trainloader, 0):
-        print(trainIndex, len(trainloader))
+        print(trainIndex, len(trainloader), flush=True)
         # Get the input and the target from the training set
         frame0, frameT, frame1 = trainData
 
@@ -92,18 +98,14 @@ for epoch in range(epochs):
 
         iLoss += loss.item()
     
-    print(f"Epoch {epoch} Loss: {iLoss}", flush=True)
+    end = time.time()
+    print("Epoch {} Loss: {} Time: {:.2f} min".format(epoch, iLoss, (end - start) / 60))
     with open('train.log', 'w') as f:
-        f.write(f"Epoch {epoch} Loss: {iLoss}\n")
+        f.write("Epoch {} Loss: {} Time: {:.2f} min\n".format(epoch, iLoss, (end - start) / 60))
     
     
     torch.save(model.state_dict(), checkpoint_dir + str(epoch) + ".pth")
 
     # Increment scheduler count
     scheduler.step()
-
-end = time.time()
-print("Totol Running Time is {:.2f} min.".format((end - start) / 60))
-with open('train.log', 'w') as f:
-    f.write("Totol Running Time is {:.2f} min.\n".format((end - start) / 60))
     
