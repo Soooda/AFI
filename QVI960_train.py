@@ -12,6 +12,8 @@ import time
 from datas.QVI960 import QVI960
 from models.AnimeInterp import AnimeInterp
 
+os.environ["CUDA_AVAILABLE_DEVICES"] = str(3)
+
 # Loss Function
 def loss_fn(output, gt):
     return F.l1_loss(output, gt)
@@ -96,3 +98,6 @@ for epoch in range(epochs):
 
     # Increment scheduler count
     scheduler.step()
+
+end = time.time()
+print("Totol Running Time is {:.2f} min.".format((end - start) / 60)
