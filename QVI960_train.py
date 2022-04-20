@@ -86,7 +86,7 @@ for epoch in range(epochs):
 
         optimizer.zero_grad()
         output = model(I0, I1, None, None, t) # SGM flows are not used in this training
-        loss = loss_fn(output, IT)
+        loss = loss_fn(output[0], IT)
         loss.backward()
         optimizer.step()
 
