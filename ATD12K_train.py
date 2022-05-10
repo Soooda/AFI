@@ -39,7 +39,7 @@ revNormalize = TF.Compose([revnormalize1, revnormalize2])
 revtrans = TF.Compose([revnormalize1, revnormalize2, TF.ToPILImage()])
 
 trainset = AniTripletWithSGMFlow(trainset_root, train_flow_root, trans, train_size, train_crop_size)
-trainloader = torch.utils.data.Dataloader(trainset, batch_size=train_batch_size, shuffle=True, num_worker=20)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size, shuffle=True, num_worker=20)
 
 model = AnimeInterp(path=None).cuda()
 model = nn.DataParallel(model)
