@@ -48,7 +48,7 @@ model = nn.DataParallel(model)
 params = model.parameters()
 optimizer = optim.Adam(params, lr=init_learning_rate)
 
-ret = model.load_state_dict(torch.load("checkpoints/108.pth")["state_dict"], strict=True)
+ret = model.load_state_dict(torch.load("checkpoints/QVI960/108.pth")["state_dict"], strict=True)
 print(ret)
 
 if not os.path.exists(checkpoint_dir):
@@ -71,7 +71,7 @@ for epoch in range(epochs):
 
     iLoss = 0
     start = time.time()
-    for trainIndex, (trainData, t) in enumerate(trainloader, 0):
+    for trainIndex, trainData in enumerate(trainloader, 0):
         print(f"\r{trainIndex+1}/{len(trainloader)}", end='', flush='')
 
         # Get the input and the target from the training set
