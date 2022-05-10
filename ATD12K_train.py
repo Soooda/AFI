@@ -82,6 +82,8 @@ for epoch in range(epochs):
 
         # initial SGM flow
         F12i, F21i  = flow
+        F12i = F12i.float().cuda() 
+        F21i = F21i.float().cuda()
 
         I0 = frame1.cuda()
         I1 = frame2.cuda()
