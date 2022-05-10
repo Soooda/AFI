@@ -24,14 +24,14 @@ checkpoint_dir = 'checkpoints/QVI960/'
 trainset_root = 'datasets/QVI-960'
 train_size = (640, 360)
 train_crop_size = (352, 352)
-train_batch_size = 16
-epochs = 2
+train_batch_size = 6
+epochs = 110
 
 mean = [0.429, 0.431, 0.397]
 std  = [1, 1, 1]
 
 init_learning_rate = 1e-4
-milestones = [100, 150]
+milestones = [45, 90]
 
 # preparing transform & datasets
 normalize1 = TF.Normalize(mean, [1.0, 1.0, 1.0])
@@ -81,13 +81,15 @@ for epoch in range(epochs):
         optimizer.load_state_dict(temp['optimizer'])
         scheduler.load_state_dict(temp['scheduler'])
 
+        # optimizer.param_groups[0]['lr'] = 0.000001
+
         print(f"Epoch {epoch} Checkpoint loaded!")
         continue
 
     iLoss = 0
     start = time.time()
     for trainIndex, (trainData, t) in enumerate(trainloader, 0):
-        print(f"\r{trainIndex}/{len(trainloader)}", end='', flush='')
+        print(f"\r{trainIndex+1}/{len(trainloader)}", end='', flush='')
 
         # Get the input and the target from the training set
         frame0, frameT, frame1 = trainData
