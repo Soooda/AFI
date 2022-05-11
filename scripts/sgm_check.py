@@ -31,7 +31,7 @@ for folder in folders:
     count += 1
     print("\rChecking {} / 10000".format(count), end="", flush="")
     ls = os.listdir(sgm_folder + folder)
-    if eq(FILE_LIST, ls):
+    if not eq(FILE_LIST, ls):
         print(f'{folder} contains missing files.')
         continue
 
