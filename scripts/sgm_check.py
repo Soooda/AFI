@@ -4,6 +4,15 @@ Check if each triplet contains valid sgm flows data
 import os
 import numpy as np
 
+def eq(li1, li2):
+    if len(li1) != len(li2):
+        return False
+    
+    for e in li1:
+        if e not in li2:
+            return False
+    return True
+
 FILE_LIST = [
     "guide_flo13.jpg",
     "guide_flo31.jpg",
@@ -22,7 +31,7 @@ for folder in folders:
     count += 1
     print("\rChecking {} / 10000".format(count), end="", flush="")
     ls = os.listdir(sgm_folder + folder)
-    if FILE_LIST == ls:
+    if eq(FILE_LIST, ls):
         print(f'{folder} contains missing files.')
         continue
 
