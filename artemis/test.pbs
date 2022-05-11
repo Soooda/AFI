@@ -1,16 +1,15 @@
 #!/bin/bash
 #PBS -P VUR
-#PBS -q small-express
 #PBS -l select=1:ncpus=1:ngpus=1:mem=1GB
 #PBS -l walltime=00:05:00
 #PBS -j oe
 
-module load python/3.7.2 cuda/10.0.130
-module load openmpi-gcc/3.1.3
+module load python/3.7.7 cuda/10.0.130 openmpi-gcc/3.1.3
 
 #module load anaconda3/2020.07
 
-source /project/VUR/lkon0010/AFI/bin/activate
+source /project/VUR/lkon0010/env/AFI/bin/activate
+
 cd "$PBS_O_WORKDIR"
 cd ..
 python ATD12K_train.py
