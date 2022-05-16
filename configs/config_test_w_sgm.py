@@ -14,6 +14,6 @@ inter_frames = 1
 model = 'AnimeInterp'
 pwc_path = None
 
-checkpoint = 'checkpoints/108.pth'
+checkpoint = 'checkpoints/ATD12K/49.pth'
 
 store_path = 'outputs/atd-12k'
