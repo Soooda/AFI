@@ -20,7 +20,7 @@ for checkpoint in range(160, 98, -1):
     # Evaluate
     ret = os.system('cd ..;python test_anime_sequence_one_by_one.py configs/config_test_w_sgm.py > temp.out')
 
-    with open("temp.out", 'r') as f:
+    with open("../temp.out", 'r') as f:
         txt = f.read().splitlines()
 
     with open("atd-12k epoch{}.txt".format(checkpoint), 'w') as f:
