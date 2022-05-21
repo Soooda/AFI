@@ -17,7 +17,7 @@ for checkpoint in range(160, 98, -1):
                 f.write('\n')
 
     # Evaluate
-    ret = os.system('python ../test_anime_sequence_one_by_one.py ../configs/config_test_w_sgm.py > temp.out')
+    ret = os.system('cd ..;python ../test_anime_sequence_one_by_one.py ../configs/config_test_w_sgm.py > temp.out')
 
     with open("temp.out", 'r') as f:
         txt = f.read().splitlines()
