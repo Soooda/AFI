@@ -1,4 +1,5 @@
 import os
+import shutil
 
 psnrs = {}
 
@@ -29,5 +30,8 @@ for checkpoint in range(160, 98, -1):
 
         psnr = float(txt[-6][14:])
         psnrs[checkpoint] = psnr
+
+    # Remove outputs
+    shutil.rmtree("../outputs/atd-12k")
 
 print(psnrs)
