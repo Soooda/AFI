@@ -62,8 +62,8 @@ class StyleLoss(torch.nn.Module):
         output = (output-self.mean) / self.std
         gt = (gt-self.mean) / self.std
         if self.resize:
-            output = self.transform(output, mode='bilinear', size=(224, 224), align_corners=False)
-            gt = self.transform(gt, mode='bilinear', size=(224, 224), align_corners=False)
+            output = F.interpolate(output, mode='bilinear', size=(224, 224), align_corners=False)
+            gt = F.interpolate(gt, mode='bilinear', size=(224, 224), align_corners=False)
         loss = 0.0
         x = output
         y = gt
