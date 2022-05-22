@@ -12,46 +12,27 @@ from models.AnimeInterp import AnimeInterp
 
 # Loss Functions
 # Ref. https://gist.github.com/alper111/8233cdb0414b4cb5853f2f730ab95a49
-class VGGLoss:
+class StyleLoss(torch.nn.Module):
     def __init__(self, resize=True):
-        vgg19 = torchvision.models.vgg19(pretrained=True).cuda();
+        super(StyleLoss, self).__init__()
         # Alphas
         self.weights = [1.0 / 2.6, 1.0 / 4.8, 1.0 / 3.7, 1.0 / 5.6, 10.0 / 1.5]
 
         blocks = []
-        # relu1_2
-        blocks.append(vgg19.features[:4].eval())
-        # relu2_2
-        blocks.append(vgg19.features[4:9].eval())
-        # relu3_2
-        blocks.append(vgg19.features[9:14].eval())
-        # relu4_2
-        blocks.append(vgg19.features[18:23].eval())
-        # relu5_2
-        blocks.append(vgg19.features[27:32].eval())
-
+        blocks.append(torchvision.models.vgg19(pretrained=True).features[:4].eval()) # relu1_2
+        blocks.append(torchvision.models.vgg19(pretrained=True).features[4:9].eval()) # relu2_2
+        blocks.append(torchvision.models.vgg19(pretrained=True).features[9:14].eval()) # relu3_2
+        blocks.append(torchvision.models.vgg19(pretrained=True).features[18:23].eval()) # relu4_2
+        blocks.append(torchvision.models.vgg19(pretrained=True).features[27:32].eval()) # relu5_2
         for bl in blocks:
             for p in bl.parameters():
                 p.requires_grad = False
         self.blocks = torch.nn.ModuleList(blocks)
-        self.transform = F.interpolate
-        self.mean = torch.nn.Parameter(torch.tensor([0.485, 0.456, 0.406], device='cuda').view(1,3,1,1))
-        self.std = torch.nn.Parameter(torch.tensor([0.229, 0.224, 0.225], device='cuda').view(1,3,1,1))
         self.resize = resize
-    
-    def vgg_loss(self, input, target):
-        if input.shape[1] != 3:
-            input = input.repeat(1, 3, 1, 1)
-            target = target.repeat(1, 3, 1, 1)
-        input = (input-self.mean) / self.std
-        target = (target-self.mean) / self.std
-        if self.resize:
-            input = self.transform(input, mode='bilinear', size=(224, 224), align_corners=False)
-            target = self.transform(target, mode='bilinear', size=(224, 224), align_corners=False)
-        loss = 0.0
-        x = input
-        y = target
+        self.register_buffer("mean", torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
+        self.register_buffer("std", torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
 
+    def vgg_loss(self, x, y):
         for i in range(len(self.blocks)):
             block = self.blocks[i]
             x = block(x)
@@ -59,19 +40,7 @@ class VGGLoss:
             loss += F.l1_loss(x, y) * self.weights[i]
         return loss
 
-    def gram_loss(self, input, target):
-        if input.shape[1] != 3:
-            input = input.repeat(1, 3, 1, 1)
-            target = target.repeat(1, 3, 1, 1)
-        input = (input-self.mean) / self.std
-        target = (target-self.mean) / self.std
-        if self.resize:
-            input = self.transform(input, mode='bilinear', size=(224, 224), align_corners=False)
-            target = self.transform(target, mode='bilinear', size=(224, 224), align_corners=False)
-        loss = 0.0
-        x = input
-        y = target
-
+    def gram_loss(self, x, y):
         for i in range(len(self.blocks)):
             block = self.blocks[i]
             x = block(x)
@@ -83,15 +52,23 @@ class VGGLoss:
             loss += F.mse_loss(gram_x, gram_y) * self.weights[i]
         return loss
 
-    def l1_loss(self, output, gt):
-        return F.l1_loss(output, gt)
-
-    def style_loss(self, output, gt):
+    def forward(self, output, gt):
         # Refer to FILM Section 4
-        weights = (1.0, 0.25, 40.0)
-        return weights[0] * self.l1_loss(output, gt) + weights[1] * self.vgg_loss(output, gt) + weights[2] * self.style_loss(output, gt)
+        alphas = (1.0, 0.25, 40.0)
 
-loss_fn = VGGLoss()
+        if output.shape[1] != 3:
+            output = output.repeat(1, 3, 1, 1)
+            target = target.repeat(1, 3, 1, 1)
+        output = (output-self.mean) / self.std
+        gt = (gt-self.mean) / self.std
+        if self.resize:
+            output = self.transform(output, mode='bilinear', size=(224, 224), align_corners=False)
+            gt = self.transform(gt, mode='bilinear', size=(224, 224), align_corners=False)
+        loss = 0.0
+        x = output
+        y = gt
+        
+        return alphas[0] * F.l1_loss(output, gt) + alphas[1] * self.vgg_loss(x, y) + alphas[2] * self.gram_loss(x, y)
 
 checkpoint_dir = 'checkpoints/ATD12K-Style/'
 trainset_root = 'datasets/train_10k_540p'
@@ -123,6 +100,9 @@ trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
 
 model = AnimeInterp(path=None).cuda()
 model = nn.DataParallel(model)
+
+# Loss
+criterion = StyleLoss()
 
 # Optimizer
 params = model.parameters()
@@ -172,7 +152,7 @@ for epoch in range(epochs):
 
         optimizer.zero_grad()
         output = model(I0, I1, F12i, F21i, t)
-        loss = loss_fn.style_loss(output[0], IT)
+        loss = criterion(output[0], IT)
         loss.backward()
         optimizer.step()
 
