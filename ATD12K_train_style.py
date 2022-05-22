@@ -29,8 +29,8 @@ class StyleLoss(torch.nn.Module):
                 p.requires_grad = False
         self.blocks = torch.nn.ModuleList(blocks)
         self.resize = resize
-        self.register_buffer("mean", torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
-        self.register_buffer("std", torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
+        self.register_buffer("mean", torch.tensor([0.485, 0.456, 0.406], device="cuda").view(1, 3, 1, 1))
+        self.register_buffer("std", torch.tensor([0.229, 0.224, 0.225], device="cuda").view(1, 3, 1, 1))
 
     def vgg_loss(self, x, y):
         for i in range(len(self.blocks)):
