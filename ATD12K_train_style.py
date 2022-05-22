@@ -14,20 +14,21 @@ from models.AnimeInterp import AnimeInterp
 # Ref. https://gist.github.com/alper111/8233cdb0414b4cb5853f2f730ab95a49
 class VGGLoss:
     def __init__(self, resize=True):
+        vgg19 = torchvision.models.vgg19(pretrained=True).cuda();
         # Alphas
         self.weights = [1.0 / 2.6, 1.0 / 4.8, 1.0 / 3.7, 1.0 / 5.6, 10.0 / 1.5]
 
         blocks = []
         # relu1_2
-        blocks.append(torchvision.models.vgg19(pretrained=True).features[:4].eval())
+        blocks.append(vgg19.features[:4].eval())
         # relu2_2
-        blocks.append(torchvision.models.vgg19(pretrained=True).features[4:9].eval())
+        blocks.append(vgg19.features[4:9].eval())
         # relu3_2
-        blocks.append(torchvision.models.vgg19(pretrained=True).features[9:14].eval())
+        blocks.append(vgg19.features[9:14].eval())
         # relu4_2
-        blocks.append(torchvision.models.vgg19(pretrained=True).features[18:23].eval())
+        blocks.append(vgg19.features[18:23].eval())
         # relu5_2
-        blocks.append(torchvision.models.vgg19(pretrained=True).features[27:32].eval())
+        blocks.append(vgg19.features[27:32].eval())
 
         for bl in blocks:
             for p in bl.parameters():
@@ -87,7 +88,7 @@ class VGGLoss:
 
     def style_loss(self, output, gt):
         # Refer to FILM Section 4
-        weights = torch.FloatTensor([1.0, 0.25, 40.0]).cuda()
+        weights = (1.0, 0.25, 40.0)
         return weights[0] * self.l1_loss(output, gt) + weights[1] * self.vgg_loss(output, gt) + weights[2] * self.style_loss(output, gt)
 
 loss_fn = VGGLoss()
