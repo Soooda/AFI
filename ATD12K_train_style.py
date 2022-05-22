@@ -87,7 +87,7 @@ class VGGLoss:
 
     def style_loss(self, output, gt):
         # Refer to FILM Section 4
-        weights = (1.0, 0.25, 40.0)
+        weights = torch.FloatTensor([1.0, 0.25, 40.0]).cuda()
         return weights[0] * self.l1_loss(output, gt) + weights[1] * self.vgg_loss(output, gt) + weights[2] * self.style_loss(output, gt)
 
 loss_fn = VGGLoss()
