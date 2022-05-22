@@ -33,6 +33,7 @@ class StyleLoss(torch.nn.Module):
         self.register_buffer("std", torch.tensor([0.229, 0.224, 0.225], device="cuda").view(1, 3, 1, 1))
 
     def vgg_loss(self, x, y):
+        loss = 0.0
         for i in range(len(self.blocks)):
             block = self.blocks[i]
             x = block(x)
@@ -41,6 +42,7 @@ class StyleLoss(torch.nn.Module):
         return loss
 
     def gram_loss(self, x, y):
+        loss = 0.0
         for i in range(len(self.blocks)):
             block = self.blocks[i]
             x = block(x)
@@ -102,7 +104,7 @@ model = AnimeInterp(path=None).cuda()
 model = nn.DataParallel(model)
 
 # Loss
-criterion = StyleLoss()
+criterion = StyleLoss().cuda()
 
 # Optimizer
 params = model.parameters()
