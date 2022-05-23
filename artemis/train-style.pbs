@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -P VUR
-#PBS -l select=1:ncpus=6:ngpus=4:mem=64GB
+#PBS -l select=1:ncpus=4:ngpus=4:mem=64GB
 #PBS -l walltime=24:00:00
 #PBS -j oe
 
