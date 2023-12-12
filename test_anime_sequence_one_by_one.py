@@ -17,8 +17,9 @@ import sys
 import cv2
 from utils.vis_flow import flow_to_color
 import json
-from skimage.measure import compare_psnr, compare_ssim
-
+# from skimage.measure import compare_psnr, compare_ssim
+from skimage.metrics import peak_signal_noise_ratio as compare_psnr
+from skimage.metrics import structural_similarity as compare_ssim
 
 def save_flow_to_img(flow, des):
         f = flow[0].data.cpu().numpy().transpose([1, 2, 0])
@@ -58,8 +59,8 @@ def validate(config):
 
     # load weights
     dict1 = torch.load(config.checkpoint)
-    # ret = model.load_state_dict(dict1['model_state_dict'], strict=False)
-    ret = model.load_state_dict(dict1["state_dict"], strict=False)
+    ret = model.load_state_dict(dict1['model_state_dict'], strict=False)
+    # ret = model.load_state_dict(dict1["state_dict"], strict=False)
     # ret = model.load_state_dict(dict1, strict=False)
     print(ret)
 
@@ -164,7 +165,10 @@ def validate(config):
 
                 # whole image value
                 this_psnr = compare_psnr(estimated, gt)
-                this_ssim = compare_ssim(estimated, gt, multichannel=True, gaussian=True)
+                this_ssim = compare_ssim(estimated, gt, 
+                data_range=1.0,
+                channel_axis=2,
+                gaussian=True)
                 this_ie = np.mean(np.sqrt(np.sum((estimated*255 - gt*255)**2, axis=2)))
 
                 psnrs[validationIndex][tt] = this_psnr
@@ -183,7 +187,10 @@ def validate(config):
 
                 # roi image value
                 this_roi_psnr = compare_psnr(estimated_roi, gt_roi)
-                this_roi_ssim = compare_ssim(estimated_roi, gt_roi, multichannel=True, gaussian=True)
+                this_roi_ssim = compare_ssim(estimated_roi, gt_roi, 
+                data_range=1.0,
+                channel_axis=2,
+                gaussian=True)
                 
                 psnr_roi += this_roi_psnr
                 ssim_roi += this_roi_ssim
