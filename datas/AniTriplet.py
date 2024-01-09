@@ -35,7 +35,7 @@ def _pil_loader(path, cropArea=None, resizeDim=None, frameFlip=0):
     with open(path, 'rb') as f:
         img = Image.open(f)
         # Resize image if specified.
-        resized_img = img.resize(resizeDim, Image.ANTIALIAS) if (resizeDim != None) else img
+        resized_img = img.resize(resizeDim, Image.Resampling.LANCZOS) if (resizeDim != None) else img
         # cv2.imwrite(resize)
         # Crop image if crop area specified.
         if cropArea != None:
