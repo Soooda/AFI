@@ -72,15 +72,15 @@ class StyleLoss(torch.nn.Module):
         
         return alphas[0] * F.l1_loss(output, gt) + alphas[1] * self.vgg_loss(x, y) + alphas[2] * self.gram_loss(x, y)
 
-checkpoint_dir = 'checkpoints/ATD12K-Style/'
-trainset_root = 'datasets/train_10k_540p'
-train_flow_root = 'datasets/train_10k_pre_calc_sgm_flows'
+checkpoint_dir = 'checkpoints/Style/'
+trainset_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k'
+train_flow_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k_pre_calc_sgm_flows'
 train_size = (960, 540)
 train_crop_size = (380, 380)
-train_batch_size = 8
+train_batch_size = 3
 inter_frames = 1
 epochs = 50
-init_learning_rate = 3e-6
+init_learning_rate = 1e-6
 
 mean = [0., 0., 0.]
 std  = [1, 1, 1]
@@ -110,7 +110,7 @@ criterion = StyleLoss().cuda()
 params = model.parameters()
 optimizer = optim.Adam(params, lr=init_learning_rate)
 
-ret = model.load_state_dict(torch.load("checkpoints/ATD12K/195.pth")["state_dict"], strict=True)
+ret = model.load_state_dict(torch.load("checkpoints/QVI960/199.pth")["state_dict"], strict=True)
 print(ret)
 
 if not os.path.exists(checkpoint_dir):

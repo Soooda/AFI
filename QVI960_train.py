@@ -20,11 +20,11 @@ def loss_fn(output, gt):
     #return F.l1_loss(output, gt) * 204
 
 checkpoint_dir = 'checkpoints/QVI960/'
-trainset_root = 'datasets/QVI-960'
+trainset_root = '/home/michael/hilbert/Desktop/Datasets/QVI-960'
 train_size = (640, 360)
 train_crop_size = (352, 352)
-train_batch_size = 6
-epochs = 110
+train_batch_size = 4
+epochs = 200
 
 mean = [0.429, 0.431, 0.397]
 std  = [1, 1, 1]

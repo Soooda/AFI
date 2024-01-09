@@ -14,13 +14,13 @@ def loss_fn(output, gt):
     return F.l1_loss(output, gt)
 
 checkpoint_dir = 'checkpoints/ATD12K/'
-trainset_root = 'datasets/train_10k_540p'
-train_flow_root = 'datasets/train_10k_pre_calc_sgm_flows'
+trainset_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k'
+train_flow_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k_pre_calc_sgm_flows'
 train_size = (960, 540)
 train_crop_size = (380, 380)
-train_batch_size = 8
+train_batch_size = 3
 inter_frames = 1
-epochs = 300
+epochs = 100
 init_learning_rate = 1e-6
 
 mean = [0., 0., 0.]
@@ -48,7 +48,7 @@ model = nn.DataParallel(model)
 params = model.parameters()
 optimizer = optim.Adam(params, lr=init_learning_rate)
 
-ret = model.load_state_dict(torch.load("checkpoints/QVI960/108.pth")["state_dict"], strict=True)
+ret = model.load_state_dict(torch.load("checkpoints/QVI960/199.pth")["state_dict"], strict=True)
 print(ret)
 
 if not os.path.exists(checkpoint_dir):
