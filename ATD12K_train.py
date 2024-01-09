@@ -14,8 +14,8 @@ def loss_fn(output, gt):
     return F.l1_loss(output, gt)
 
 checkpoint_dir = 'checkpoints/ATD12K/'
-trainset_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k'
-train_flow_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k_pre_calc_sgm_flows'
+trainset_root = 'datasets/atd-12k/train_10k'
+train_flow_root = 'datasets/atd-12k/train_10k_pre_calc_sgm_flows'
 train_size = (960, 540)
 train_crop_size = (380, 380)
 train_batch_size = 3
