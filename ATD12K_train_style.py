@@ -77,7 +77,7 @@ trainset_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k'
 train_flow_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k_pre_calc_sgm_flows'
 train_size = (960, 540)
 train_crop_size = (380, 380)
-train_batch_size = 3
+train_batch_size = 4
 inter_frames = 1
 epochs = 50
 init_learning_rate = 1e-6
@@ -98,7 +98,7 @@ revNormalize = TF.Compose([revnormalize1, revnormalize2])
 revtrans = TF.Compose([revnormalize1, revnormalize2, TF.ToPILImage()])
 
 trainset = AniTripletWithSGMFlow(trainset_root, train_flow_root, trans, train_size, train_crop_size)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size, shuffle=True, num_workers=20)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size, shuffle=True, num_workers=4)
 
 model = AnimeInterp(path=None).cuda()
 model = nn.DataParallel(model)
