@@ -164,10 +164,6 @@ def generate_sgm(I1, I3):
     rankSum_1to3, matching_1to3, sortedCorrMap_1 = matchingMetaData[:3]
     rankSum_3to1, matching_3to1, sortedCorrMap_3 = matchingMetaData[3:]
 
-    mMatchCount_1 = (rankSum_1to3 <= rankSumThr).sum()
-    mMatchCount_3 = (rankSum_3to1 <= rankSumThr).sum()
-    totalMatchCount += (mMatchCount_1 + mMatchCount_3)/2
-
     # Generating flows
     guideflow_1to3, matching_color_1to3 = get_guidance_flow(labelMap1, labelMap3, I1, I3,
                             rankSum_1to3, matching_1to3, sortedCorrMap_1,
@@ -180,7 +176,7 @@ def generate_sgm(I1, I3):
     
     return guideflow_1to3, guideflow_3to1
 
-input_path = "/home/michael/hilbert/Desktop/Datasets/temp.mp4"
+input_path = "/home/michael/hilbert/Desktop/Datasets/24fps.mp4"
 checkpoint = os.path.join("checkpoints", "ATD12K-Style", "49.pth")
 output_path = "output.mp4"
 
@@ -188,10 +184,9 @@ output_path = "output.mp4"
 videoCapture = cv2.VideoCapture(input_path)
 fps = videoCapture.get(cv2.CAP_PROP_FPS)
 total_frames = videoCapture.get(cv2.CAP_PROP_FRAME_COUNT)
-videoCapture.release()
 
-videogen = skvideo.io.vreader(input_path)
-lastframe = next(videogen)
+videogen = videoCapture
+lastframe = videoCapture.read()[1]
 fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
 video_path_wo_ext, ext = os.path.splitext(input_path)
 print('{}.{}, {} frames in total, {}FPS to {}FPS'.format(video_path_wo_ext, ext, total_frames, fps, 2 * fps))
@@ -200,7 +195,8 @@ h, w, _ = lastframe.shape
 vid_out = cv2.VideoWriter(output_path, fourcc, fps * 2, (w, h))
 
 # Loads AFI model
-model = AnimeInterp().to(device)
+model = AnimeInterp(path=None).to(device)
+model = torch.nn.DataParallel(model)
 weights = torch.load(checkpoint)
 ret = model.load_state_dict(weights["state_dict"], strict=False)
 print(ret)
@@ -221,7 +217,10 @@ def clear_write_buffer(write_buffer):
 
 def build_read_buffer(read_buffer, videogen):
     try:
-        for frame in videogen:
+        while True:
+            ret, frame = videogen.read()
+            if not ret:
+                break
             read_buffer.put(frame)
     except:
         pass
@@ -232,7 +231,8 @@ read_buffer = Queue(maxsize=500)
 _thread.start_new_thread(build_read_buffer, (read_buffer, videogen))
 _thread.start_new_thread(clear_write_buffer, (write_buffer,))
 
-I1 = torch.from_numpy(np.transpose(lastframe, (2,0,1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
+# I1 = torch.from_numpy(np.transpose(lastframe, (2,0,1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
+I1 = lastframe
 temp = None # Save lastframe when processing static frame
 
 while True:
@@ -244,13 +244,17 @@ while True:
     if frame is None:
         break
     I0 = I1
-    I1 = torch.from_numpy(np.transpose(frame, (2,0,1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
+    # I1 = torch.from_numpy(np.transpose(frame, (2,0,1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
+    I1 = frame
 
-    F12i, F21i = generate_sgm(I0.cpu().numpy(), I1.cpu().numpy())
-    F12i.float().to(device)
-    F21i.float().to(device)
+    F12i, F21i = generate_sgm(I0, I1)
+    F12i = torch.from_numpy(F12i).to(device)
+    F21i = torch.from_numpy(F21i).to(device)
 
-    outputs = model(I0, I1, F12i, F21i, t=0.5)
+    F1 = torch.from_numpy(np.transpose(I0, (2,0,1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
+    F2 = torch.from_numpy(np.transpose(I1, (2,0,1))).to(device, non_blocking=True).unsqueeze(0).float() / 255.
+
+    outputs = model(F1, F2, F12i, F21i, t=0.5)
     It_warp = outputs[0]
     It = revNormalize(It_warp[0].cpu()).clamp(0.0, 1.0).numpy().transpose(1, 2, 0)
 

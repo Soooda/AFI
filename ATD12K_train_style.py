@@ -56,7 +56,7 @@ class StyleLoss(torch.nn.Module):
 
     def forward(self, output, gt):
         # Refer to FILM Section 4
-        alphas = (1.0, 0.25, 40.0)
+        alphas = (1.0, 0.25, 20.0)
 
         if output.shape[1] != 3:
             output = output.repeat(1, 3, 1, 1)
@@ -72,15 +72,17 @@ class StyleLoss(torch.nn.Module):
         
         return alphas[0] * F.l1_loss(output, gt) + alphas[1] * self.vgg_loss(x, y) + alphas[2] * self.gram_loss(x, y)
 
-checkpoint_dir = 'checkpoints/Style/'
-trainset_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k'
-train_flow_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k_pre_calc_sgm_flows'
+checkpoint_dir = 'checkpoints/Style2/'
+# trainset_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k'
+# train_flow_root = '/home/michael/hilbert/Desktop/Datasets/atd-12k/train_10k_pre_calc_sgm_flows'
+trainset_root = '/home3/hilbert/atd-12k/train_10k'
+train_flow_root = '/home3/hilbert/atd-12k/train_10k_pre_calc_sgm_flows'
 train_size = (960, 540)
 train_crop_size = (380, 380)
 train_batch_size = 4
 inter_frames = 1
-epochs = 50
-init_learning_rate = 1e-6
+epochs = 100
+init_learning_rate = 3e-6
 
 mean = [0., 0., 0.]
 std  = [1, 1, 1]
@@ -110,7 +112,8 @@ criterion = StyleLoss().cuda()
 params = model.parameters()
 optimizer = optim.Adam(params, lr=init_learning_rate)
 
-ret = model.load_state_dict(torch.load("checkpoints/QVI960/199.pth")["state_dict"], strict=True)
+# ret = model.load_state_dict(torch.load("checkpoints/QVI960/199.pth")["state_dict"], strict=True)
+ret = model.load_state_dict(torch.load("checkpoints/ATD12K/49.pth")["state_dict"], strict=True)
 print(ret)
 
 if not os.path.exists(checkpoint_dir):
@@ -162,7 +165,7 @@ for epoch in range(epochs):
     
     end = time.time()
     print("Epoch {} Loss: {} Time: {:.2f} min".format(epoch, iLoss, (end - start) / 60))
-    with open('style-train.log', 'a') as f:
+    with open('style2-train.log', 'a') as f:
         f.write("Epoch {} Loss: {} Time: {:.2f} min\n".format(epoch, iLoss, (end - start) / 60))
     
     checkpoints = {

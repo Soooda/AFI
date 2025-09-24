@@ -171,8 +171,8 @@ def validate(config):
 
                 # whole image value
                 this_psnr = compare_psnr(estimated, gt)
-                this_ssim = compare_ssim(estimated, gt, channel_axis=2, gaussian=True)
-                # this_ssim = compare_ssim(estimated, gt, multichannel=True, gaussian=True)
+                # this_ssim = compare_ssim(estimated, gt, channel_axis=2, gaussian=True)
+                this_ssim = compare_ssim(estimated, gt, multichannel=True, gaussian=True)
                 this_ie = np.mean(np.sqrt(np.sum((estimated*255 - gt*255)**2, axis=2)))
 
                 psnrs[validationIndex][tt] = this_psnr
@@ -191,8 +191,8 @@ def validate(config):
 
                 # roi image value
                 this_roi_psnr = compare_psnr(estimated_roi, gt_roi)
-                this_roi_ssim = compare_ssim(estimated_roi, gt_roi, channel_axis=2, gaussian=True)
-                # this_roi_ssim = compare_ssim(estimated_roi, gt_roi, multichannel=True, gaussian=True)
+                # this_roi_ssim = compare_ssim(estimated_roi, gt_roi, channel_axis=2, gaussian=True)
+                this_roi_ssim = compare_ssim(estimated_roi, gt_roi, multichannel=True, gaussian=True)
                 
                 psnr_roi += this_roi_psnr
                 ssim_roi += this_roi_ssim
